@@ -38,7 +38,10 @@
       <name>Ludovic Dubost (XWiki SAS)</name>
     </developer>
   </developers>
- <build>
+  <properties>
+   <xwiki.extension.features>org.xwiki.contrib:xwiki-application-googleapps</xwiki.extension.features>
+  </properties>
+   <build>
     <!-- Needed to add support for the XAR packaging -->
     <extensions>
       <extension>
