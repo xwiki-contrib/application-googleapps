@@ -77,13 +77,12 @@ OiBmYWxzZSwKICJzcGFjZXMiOiBbCiAgImRyaXZlIgogXQp9Cg==
   <content>
 This is the code for the Google Apps extension, allowing to integrate XWiki with Google's editing application (Google Docs, Spreadsheet, Presentations and Drawing). Thanks to this application it possible to easily import a Google Apps document as an attachment in XWiki (in multiple formats) and also to launch editing of an XWiki attachment in Google Apps. Once your editing session is finished you can reimport it in XWiki.
 
-To use this feature you will first need to [[register your wiki on google&gt;&gt;https://accounts.google.com/ManageDomains]] and obtain a secret key for the OAuth authentication integration. You will need to configure these keys in the [[Google Apps section of the XWiki Preferences&gt;&gt;XWiki.XWikiPreferences?editor=globaladmin&amp;section=googleapps]]
+To use this feature you will first need to [[generated OAuth2 credentials on the Google Developer Console&gt;&gt;https://developers.google.com/identity/protocols/OAuth2?hl=en]] and obtain a secret key for the OAuth authentication integration. You will need to configure these keys in the [[Google Apps section of the XWiki Preferences&gt;&gt;XWiki.XWikiPreferences?editor=globaladmin&amp;section=googleapps]]
 
-You also need to visit the page [[GoogleApps.Install]] to finalize the installation and install the translations bundle.
-
-You can verify your installation by visiting the page [[TestDocumentList]], which should list you 100 documents of your Google Docs instance.
+You can verify your installation by visiting the page [[TestDocumentList]], which should list you 10 documents of your Google Docs instance.
 
 Once you have properly configured the application, you will be able to see the feature in the Attachments section of XWiki pages. You can either click on the edit link next to each attachment or use the "Import from Google Apps" button.
 
-{{dashboard source="Main.Dashboard" /}}</content>
+You can also use the "drive" macro to insert a Google Document in your page. See [[DriveMacroTest]] to try it out.
+</content>
 </xwikidoc>
