@@ -38,6 +38,7 @@ $msg.get("googleapps.edit.desc")
 (% class="buttonwrapper" %)[[$msg.get("googleapps.edit.retrieve.button")&gt;&gt;RetrieveFromGoogleApps?page=${escapetool.url($request.page)}&amp;name=${escapetool.url($request.name)}&amp;url=${escapetool.url($gdoc.exportLink)}]]
 #end
 
+#*
 #if(!$request.confirm)
  #set($entry = $gagroovy.checkFileExists($request.page, $request.name))
 #end
@@ -66,5 +67,6 @@ $msg.get("googleapps.edit.desc")
 
 (% class="buttonwrapper" %)[[$msg.get("googleapps.edit.retrieve.button")&gt;&gt;RetrieveFromGoogleApps?page=${escapetool.url($request.page)}&amp;name=${escapetool.url($request.name)}&amp;id=${escapetool.url($exporturl)}]]
 #end
+*#
 {{/velocity}}</content>
 </xwikidoc>
