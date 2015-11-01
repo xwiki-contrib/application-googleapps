@@ -4,9 +4,9 @@
   <web>GoogleApps</web>
   <name>Install</name>
   <language/>
-  <defaultLanguage>en</defaultLanguage>
+  <defaultLanguage/>
   <translation>0</translation>
-  <parent/>
+  <parent>GoogleApps.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
