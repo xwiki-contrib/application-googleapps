@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
 
 <xwikidoc>
   <web>GoogleApps</web>
@@ -56,6 +37,8 @@ import com.google.api.services.drive.Drive;
 
 import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.*;
+
+import com.google.api.client.http.ByteArrayContent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -346,19 +329,22 @@ def getFlow() {
 
 public listDocuments(query, nbResults) {
    def drive = getDriveService(); 
-    // .setFields("items(id,mimeType,title,selfLink,version,alternateLink,embedLink)")
    def req = drive.files().list().setQ(query).setMaxResults(nbResults);
    def result = req.execute();   
    return result;
  }
 
+ public retrieveFileFromGoogle(page, name, id, url) {
+   return retrieveFileFromGoogle(getDocsService(), getDriveService(), page, name, id, url);
+ }
 
-public retrieveFileFromGoogle(page, id, name) {
-   def adoc = xwiki.getDocument(page);
-   def docsService = getDocsService();
+ public retrieveFileFromGoogle(docsService, driveService, page, name, id, url) {
+  addDebug("Retrieving ${name} to page ${page}: ${id} ${url}" )
+  def adoc = xwiki.getDocument(page);
    try {
-      def data = downloadFile(docsService, id);
-      saveFileToXWiki(docsService, adoc, name, data, true);
+      def data = downloadFile(docsService, url);
+      saveFileToXWiki(driveService, adoc, id, name, data, true);
+      return id;
    } catch (Exception e) {
      addDebug(e.getMessage())
      e.printStackTrace();
@@ -393,11 +379,18 @@ def byte[] downloadFile(docsService, String exportUrl) {
   return outStream.toByteArray();
 }
 
-public saveFileToXWiki(client, adoc, name, data, redirect) {
+public saveFileToXWiki(driveService, adoc, id, name, data, redirect) {
   def attachment = adoc.addAttachment(name, data);
 
   // ready to save now
   adoc.getDoc().saveAttachmentContent(attachment.getAttachment(), context.getContext());
+
+  def user = driveService.about().get().execute().getUser().emailAddress;
+  def docData = driveService.files().get(id).execute();
+  def embedLink = docData.embedLink;
+  if (embedLink==null)
+     embedLink = docData.alternateLink;
+
   adoc.save("Updated Attachment From Google Apps");   
   
   def object = adoc.getObject("GoogleApps.SynchronizedDocumentClass", "fileName", name.toString(), false);
@@ -405,13 +398,15 @@ public saveFileToXWiki(client, adoc, name, data, redirect) {
    object = adoc.newObject("GoogleApps.SynchronizedDocumentClass")
   }
   adoc.use(object);
-  adoc.set("id", request.id)
+  adoc.set("id", id)
   adoc.set("fileName", name)
-  adoc.set("exportLink", request.url)
-  if (request.version)
-   adoc.set("version", request.version)
-  if (request.editLink)
-   adoc.set("editLink", request.editLink)
+  if (request.url)
+   adoc.set("exportLink", request.url) 
+  adoc.set("version", docData.version.toString())
+  adoc.set("editLink", docData.alternateLink)
+  adoc.set("embedLink", embedLink)
+  if (adoc.getValue("user")=="")
+   adoc.set("user", user)
   adoc.save("Updated Google Apps Document metadata")
   addDebug("Document ${name} has been saved to XWiki")
 
@@ -471,20 +466,67 @@ public saveFileToXWiki(client, adoc, name, data, redirect) {
    return [ docName : newDocName, availableTypes : availableTypes ]
  }
 
-/*
-public getExistingFile(client, name) {
-  DocumentQuery dquery = new DocumentQuery(new URL(FEED_URL));
-  dquery.setTitleQuery(name);
-  dquery.setTitleExact(true);
-  dquery.setMaxResults(1);
-  def resultFeed = client.getFeed(dquery, DocumentListFeed.class);
-  def entries = resultFeed.getEntries();
-  if (entries.size()&gt;0)
-    return entries.get(0);
-  else
-    return null;
-}
+ public findExportLink(name, entry) {
+   def exportLink = "";
+   def lastLink = ""
+   for (elink in entry.exportLinks) {
+      addDebug("Checking link: " + elink);
+      lastLink = elink.value;
+      def index = lastLink.indexOf("exportFormat=") + 13;
+      def extension = lastLink.substring(index);
+      if (name.endsWith("." + extension))
+         return lastLink;
+   }
+   def index = lastLink.indexOf("exportFormat=") + 13;
+   exportLink = lastLink.substring(0, index);
+   if (name.endsWith(".xls"))
+    exportLink += "xlsx";
+   else {
+    exportLink += name.substring(name.lastIndexOf(".") + 1);
+   }
+   return exportLink;
+ }
 
+ public saveAttachmentToGoogle(page, name) {
+   addDebug("Starting saving attachment ${name} from page ${page}")
+   def adoc = xwiki.getDocument(page);
+   def attach = adoc.getAttachment(name);
+   def ctype = attach.getMimeType();
+
+   def file = new File();
+   file.setTitle(name);
+   file.setOriginalFilename(name);
+   def content = new ByteArrayContent(ctype, attach.getContentAsBytes());
+   def drive = getDriveService();
+   def user = drive.about().get().execute().getUser().emailAddress;
+   def insert = drive.files().insert(file, content);
+   insert.setConvert(true);
+   def docData = insert.execute();
+   if (docData) {
+     addDebug("File inserted " + docData);
+     def embedLink = docData.embedLink;
+     if (embedLink==null)
+       embedLink = docData.alternateLink;
+
+     def object = adoc.newObject("GoogleApps.SynchronizedDocumentClass");
+     adoc.use(object);
+     adoc.set("id", "${docData.id}".toString())
+     adoc.set("fileName", name)
+     adoc.set("exportLink", findExportLink(name, docData).toString())
+     adoc.set("version", docData.version.toString())
+     adoc.set("editLink", docData.alternateLink)
+     adoc.set("embedLink", embedLink)
+     adoc.set("user", user)
+     adoc.save("Updated Google Apps Document metadata")
+     return [ "id" : adoc.getValue("id"), "editLink" : adoc.getValue("editLink"), "exportLink" : adoc.getValue("exportLink")]
+
+   } else {
+     addDebug("File insert failed");
+     return null;
+   }
+ }
+
+/*
 public saveAttachmentInGoogle(adoc, name, entry) {
   def data = adoc.getAttachment(name).getContentAsBytes();
   entry.setMediaSource(new MediaByteArraySource(data, xwiki.getXWiki().getEngineContext().getMimeType(name)));
@@ -515,6 +557,19 @@ public createAttachmentInGoogle(client, adoc, name) {
        if (tmaindir!=null)
          tmaindir.delete();
   }
+}
+
+public getExistingFile(client, name) {
+  DocumentQuery dquery = new DocumentQuery(new URL(FEED_URL));
+  dquery.setTitleQuery(name);
+  dquery.setTitleExact(true);
+  dquery.setMaxResults(1);
+  def resultFeed = client.getFeed(dquery, DocumentListFeed.class);
+  def entries = resultFeed.getEntries();
+  if (entries.size()&gt;0)
+    return entries.get(0);
+  else
+    return null;
 }
  
 public getExportURL(entry, name) {
