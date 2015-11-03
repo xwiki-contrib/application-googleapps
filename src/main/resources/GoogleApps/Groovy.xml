@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
 
 <xwikidoc>
   <web>GoogleApps</web>
@@ -108,6 +89,25 @@ def HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 /** Global instance of the scopes required by this quickstart. */
 def SCOPES = Arrays.asList(DriveScopes.DRIVE);
 
+public getConfig(name) {
+ def config = "";
+ def configdoc = xwiki.getDocument(CONFIG_PAGE);
+ configdoc.use(CONFIG_CLASS);
+ def obj = configdoc.getDocument().getObject(CONFIG_CLASS);
+ if (obj!=null) {
+   config = (obj.get(name)!=null) ? obj.get(name).getValue() : "";
+ }
+ if (config=="") {
+   configdoc = xwiki.getDocument("xwiki:" + CONFIG_PAGE);
+   configdoc.use(CONFIG_CLASS);
+   obj = configdoc.getDocument().getObject(CONFIG_CLASS);
+   if (obj!=null) {
+     config = (obj.get(name)!=null) ? obj.get(name).getValue() : "";
+   }
+ }
+ return config;
+}
+
 public init(xwiki, context, doc) {
  this.xwiki = xwiki;
  this.context = context;
@@ -116,14 +116,13 @@ public init(xwiki, context, doc) {
  this.request = context.request;
  this.response = context.response;
  
- def configdoc = xwiki.getDocument(CONFIG_PAGE);
- configdoc.use(CONFIG_CLASS);
- this.APPNAME  = configdoc.getValue("appname");
- this.CLIENTID  = configdoc.getDocument().getObject(CONFIG_CLASS).get("clientid").getValue();
- this.SECRET  = configdoc.getDocument().getObject(CONFIG_CLASS).get("secret").getValue();
- this.SCOPE  = configdoc.getValue("scope");
- this.DOMAIN  = configdoc.getValue("domain");
- this.active  = configdoc.getValue("active");
+ 
+ this.APPNAME  = getConfig("appname");
+ this.CLIENTID  = getConfig("clientid");
+ this.SECRET  = getConfig("secret");
+ this.SCOPE  = getConfig("scope");
+ this.DOMAIN  = getConfig("domain");
+ this.active  = getConfig("active");
  this.REDIRECT_URI = xwiki.getDocument(AUTH_PAGE).getExternalURL("view");
  
  addDebug("APPNAME: ${APPNAME}");
@@ -180,9 +179,11 @@ def getFlow() {
   }
 
  def storeCredentials(userId, credentials) {
+   addDebug("Storing credentials for user " + userId);
    return storedCredentials.put(userId, credentials); 
  }
  def getStoredCredentials(userId) {
+   addDebug("Getting credentials for user " + userId);
    return storedCredentials.get(userId); 
  }
 
@@ -210,31 +211,41 @@ def getFlow() {
 
   def getCredentials(String authorizationCode, redirect)
       throws IOException {
-      addDebug("exchangeCode");
-      Credential credentials = (authorizationCode==null) ? null : exchangeCode(authorizationCode);
-      if (credentials!=null) {
-       addDebug("got credentials");
-       def rtoken = credentials.getRefreshToken();
-       addDebug("refresh token: " + rtoken);
-       if (rtoken != null) {
-        addDebug("got refreshToken");
-        storeCredentials(context.user, credentials);
-        return credentials;
+      Credential credentials = null;
+     
+      if (authorizationCode!=null &amp;&amp; authorizationCode!="") {
+       addDebug("Trying to get credentials from authorization code: ${authorizationCode}");
+       credentials = (authorizationCode==null) ? null : exchangeCode(authorizationCode);
+       if (credentials!=null) {
+        def rtoken = credentials.getRefreshToken();
+        if (rtoken != null) {
+         addDebug("Refresh token has been created: " + rtoken);
+         storeCredentials(context.user, credentials);
+         return credentials;
+        } else {
+         addDebug("Failure to create refresh token");
+         storeCredentials(context.user, credentials);
+         return credentials;
+        }
        }
-      } else {
-        addDebug("did not get refresh token");
+      }
+ 
+      if (credentials==null) {
+        addDebug("No credentials found. Checking stored credentials for user " + context.user);
         credentials = getStoredCredentials(context.user);
-        if (credentials != null &amp;&amp; credentials.getRefreshToken() != null) {
-            addDebug("found stored credentials");
+        if (credentials != null) {
+            addDebug("Retrieved stored credentials");
             return credentials;
         }
-        addDebug("no stored credentials");
+        addDebug("Could not find stored credentials");
       }
 
-      addDebug("No refresh token has been retrieved");
+      addDebug("No credentials retrieved.");
       // No refresh token has been retrieved.
-      if (redirect) 
+      if (redirect) {
+       addDebug("Redirecting to authorization URL.");
        response.sendRedirect(getAuthorizationURL());
+      }
  }
 
 
@@ -261,13 +272,16 @@ def getFlow() {
  }
 
  def authorize(redirect) throws IOException {
+        addDebug("In authorize")
         def flow = getFlow();
         def creds = getCredentials(request.code, redirect);
-        addDebug("Creds: ${creds}")
+        addDebug("Got credentials: ${creds}")
         if (request.state &amp;&amp; request.state!="") {
            def url = storedStates.get(request.state);
-           if (url!=null) 
+           if (url!=null) {
+            addDebug("Redirecting to final destination after authorieation: ${url}")
             response.sendRedirect(url)
+           }
         }
         return creds;
  }
