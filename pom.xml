@@ -30,7 +30,7 @@
   <artifactId>application-googleapps</artifactId>
   <version>2.-SNAPSHOT</version>
   <packaging>xar</packaging>
-  <name>XWiki Application - Google Apps</name>
+  <name>Google Apps Application</name>
   <description>This extension allows to connect Google Apps to XWiki</description>
   <developers>
     <developer>
