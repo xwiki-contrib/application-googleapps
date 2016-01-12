@@ -71,6 +71,11 @@
 	<version>1.47.1</version>
      </dependency>
      <dependency>
+        <groupId>com.google.apis</groupId>
+        <artifactId>google-api-services-plus</artifactId>
+        <version>v1-rev318-1.20.0</version>
+     </dependency>
+     <dependency>
 	<groupId>com.google.apis</groupId>
 	<artifactId>google-api-services-drive</artifactId>
 	<version>v2-rev174-1.20.0</version>
