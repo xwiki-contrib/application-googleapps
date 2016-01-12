@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>GoogleApps</web>
+  <name>AuthService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>GoogleApps.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1420066800000</creationDate>
+  <date>1420066800000</date>
+  <contentUpdateDate>1420066800000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.user.api.XWikiUser;
+import com.xpn.xwiki.user.impl.xwiki.*;
+
+import java.security.Principal;
+import org.securityfilter.realm.SimplePrincipal;
+
+
+public class GoogleAppsAuthenticationImpl extends XWikiAuthServiceImpl {
+    
+ /**
+  * Logging tool.
+  */
+ private static final Log LOG = LogFactory.getLog(GroovyAuthServiceImpl.class);
+
+
+ public XWikiUser checkAuth(XWikiContext context) throws XWikiException {
+  LOG.info("In groovy page checkAuth" );
+  return super.checkAuth(context);
+ }
+
+ /**
+  * We cannot authenticate locally since we need to trust the app server for
+  * authentication
+  *
+  * @param username
+  * @param password
+  * @param context
+  * @return
+  * @throws XWikiException
+  */
+ public XWikiUser checkAuth(String username, String password, String rememberme, XWikiContext context) {
+   return super.checkAuth(username, password, rememberme, context);
+ }
+
+ public void showLogin(XWikiContext context) throws XWikiException {
+   super.showLogin(context);
+ }
+
+ public Principal authenticate(String username, String password, XWikiContext context) throws XWikiException {
+       LOG.info("In groovy page authenticate" );
+       def session = context.getRequest().getSession();
+       def xwikiUser = session.getAttribute("googleappslogin");
+       if (xwikiUser!=null) {
+          LOG.info("Authenticating user " + xwikiUser);
+          return new SimplePrincipal(xwikiUser);
+       } else {
+        return super.authenticate(username, password, context);
+       }
+ }
+}</content>
+</xwikidoc>
