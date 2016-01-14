@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
 
 <xwikidoc>
   <web>GoogleApps</web>
@@ -30,9 +11,9 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1420066800000</creationDate>
-  <date>1420066800000</date>
-  <contentUpdateDate>1420066800000</contentUpdateDate>
+  <creationDate>1451602800000</creationDate>
+  <date>1451602800000</date>
+  <contentUpdateDate>1451602800000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -164,12 +145,13 @@ public init(xwiki, context, doc, services) {
  
  // adding user profile scopes
  // SCOPES.add(PlusScopes.PLUS_LOGIN);
+ SCOPES.add(PlusScopes.USERINFO_EMAIL);
  SCOPES.add(PlusScopes.PLUS_ME);
  SCOPES.addAll(Arrays.asList(DriveScopes.DRIVE));
 
  addDebug("APPNAME: ${APPNAME}");
  addDebug("CLIENTID: ${CLIENTID}");
- addDebug("SCOPE: ${SCOPE}");
+ addDebug("SCOPE: ${SCOPES}");
 }
 
 public addDebug(str) {
@@ -361,71 +343,82 @@ def getFlow() {
     } else {
       def id = user.id
       def email = "";
-
-      email = (user.emails!=null &amp;&amp; user.emails.size()&gt;0) ? user.emails.getAt(0).value : "";
-      def wikiUserList = services.query.xwql("from doc.object(GoogleApps.GoogleAppsAuthClass) as auth where auth.id=:id").bindValue("id", id).execute()
-      if ((wikiUserList==null) || (wikiUserList.size()==0))
-        wikiUserList = services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.email=:email").bindValue("email", email).execute()
-    
-      if ((wikiUserList==null) || (wikiUserList.size()==0)) {
-        // user not found.. need to create new user
-        xwikiUser = email.substring(0, email.indexOf("@"));
-        // make sure user is unique
-        xwikiUser = xwiki.getUniquePageName("XWiki", xwikiUser);
-        def userDoc = xwiki.getDocumentAsAuthor("XWiki." + xwikiUser);
-        userDoc.getObject("XWiki.XWikiUsers", true)
-        userDoc.use("XWiki.XWikiUsers")
-        userDoc.set("first_name", user.name.givenName)
-        userDoc.set("last_name", user.name.familyName)
-        userDoc.set("email", email)
-        userDoc.getObject("GoogleApps.GoogleAppsAuthClass", true)
-        userDoc.use("GoogleApps.GoogleAppsAuthClass")
-        userDoc.set("id", id)
-        userDoc.saveWithProgrammingRights("Google Apps login user creation")
-        // Adding user to all group
-        xwiki.addToAllGroup(userDoc.fullName);
-      } else {
-        // user found.. we should update it if needed
-        xwikiUser = wikiUserList.get(0);
-        boolean changed = false;
-        def userDoc = xwiki.getDocumentAsAuthor(xwikiUser);
-        if (!userDoc.getObject("XWiki.XWikiUsers")) {
-           System.out.println("User found is not a user");
-           return null;
+      def db = context.getDatabase()
+      try {
+        // Force main wiki database to create the user as global
+        context.setDatabase("xwiki")
+        email = (user.emails!=null &amp;&amp; user.emails.size()&gt;0) ? user.emails.getAt(0).value : "";
+        def wikiUserList = services.query.xwql("from doc.object(GoogleApps.GoogleAppsAuthClass) as auth where auth.id=:id").bindValue("id", id).execute()
+        if ((wikiUserList==null) || (wikiUserList.size()==0))
+          wikiUserList = services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.email=:email").bindValue("email", email).execute()
+      
+        if ((wikiUserList==null) || (wikiUserList.size()==0)) {
+          // user not found.. need to create new user
+          xwikiUser = email.substring(0, email.indexOf("@"));
+          // make sure user is unique
+          xwikiUser = xwiki.getUniquePageName("XWiki", xwikiUser);
+          // create user
+          def parentref = xwiki.getDocumentAsAuthor("Main.UserDirectory").getDocumentReference()
+          def isCreated = xwiki.getXWiki().createUser(xwikiUser, ["first_name" : user.name.givenName, "last_name" : user.name.familyName, "email" : email], parentref, null, null, null, context.context) 
+          // Add google apps id to the user
+          if (isCreated) {
+            xwikiUser = "XWiki." + xwikiUser
+            def userDoc = xwiki.getDocumentAsAuthor(xwikiUser)
+            userDoc.getObject("GoogleApps.GoogleAppsAuthClass", true)
+            userDoc.use("GoogleApps.GoogleAppsAuthClass")
+            userDoc.set("id", id)
+            userDoc.saveWithProgrammingRights("Google Apps login user creation")
+          } else {
+             System.out.println("User creation failed");
+             return null;
+          }
         } else {
-           userDoc.use("XWiki.XWikiUsers")
-           if (userDoc.getValue("email") != email) {
-             userDoc.set("email", email)
-             changed = true;
-           }
-           if (userDoc.getValue("first_name") != user.name.givenName) {
-             userDoc.set("first_name", user.name.givenName)
-             changed = true;
-           }
-           if (userDoc.getValue("last_name") != user.name.familyName) {
-             userDoc.set("last_name", user.name.familyName)
-             changed = true;
-           }
-           if (userDoc.getObject("GoogleApps.GoogleAppsAuthClass")==null) {
-              userDoc.getObject("GoogleApps.GoogleAppsAuthClass", true)
-              changed = true;
-           } 
-           userDoc.use("GoogleApps.GoogleAppsAuthClass")
-           if (userDoc.getValue("id") != id) {
-             userDoc.set("id", id)
-             changed = true;
-           }
-           if (changed) {
-             userDoc.saveWithProgrammingRights("Google Apps login user updated")
-           }
+          // user found.. we should update it if needed
+          xwikiUser = wikiUserList.get(0);
+          boolean changed = false;
+          def userDoc = xwiki.getDocumentAsAuthor(xwikiUser);
+          if (!userDoc.getObject("XWiki.XWikiUsers")) {
+             System.out.println("User found is not a user");
+             return null;
+          } else {
+             userDoc.use("XWiki.XWikiUsers")
+             if (userDoc.getValue("email") != email) {
+               userDoc.set("email", email)
+               changed = true;
+             }
+             if (userDoc.getValue("first_name") != user.name.givenName) {
+               userDoc.set("first_name", user.name.givenName)
+               changed = true;
+             }
+             if (userDoc.getValue("last_name") != user.name.familyName) {
+               userDoc.set("last_name", user.name.familyName)
+               changed = true;
+             }
+             if (userDoc.getObject("GoogleApps.GoogleAppsAuthClass")==null) {
+                userDoc.getObject("GoogleApps.GoogleAppsAuthClass", true)
+                changed = true;
+             } 
+             userDoc.use("GoogleApps.GoogleAppsAuthClass")
+             if (userDoc.getValue("id") != id) {
+               userDoc.set("id", id)
+               changed = true;
+             }
+             if (changed) {
+               userDoc.saveWithProgrammingRights("Google Apps login user updated")
+             }
+          }
         }
+      } finally {
+        // Restore database
+        context.setDatabase(db)
       }
       
       // we need to restore the credentials as the user will now be logged-in
       storeCredentials(xwikiUser, credential);
  
       // store the validated xwiki user for the authentication module
-      request.getSession().setAttribute("googleappslogin", xwikiUser);
+      request.getSession().setAttribute("googleappslogin", "xwiki:" + xwikiUser);
+
       return xwikiUser;
     }
   }
