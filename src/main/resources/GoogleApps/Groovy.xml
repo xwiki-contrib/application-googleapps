@@ -379,7 +379,7 @@ def getFlow() {
           xwikiUser = xwiki.getUniquePageName("XWiki", xwikiUser);
           // create user
           def parentref = xwiki.getDocumentAsAuthor("Main.UserDirectory").getDocumentReference()
-          def isCreated = xwiki.getXWiki().createUser(xwikiUser, ["first_name" : user.name.givenName, "last_name" : user.name.familyName, "email" : email], parentref, null, null, null, context.context) 
+          def isCreated = xwiki.getXWiki().createUser(xwikiUser, ["first_name" : user.name.givenName, "last_name" : user.name.familyName, "email" : email], parentref, null, null, "edit", context.context) 
           // Add google apps id to the user
           if (isCreated) {
             xwikiUser = "XWiki." + xwikiUser
