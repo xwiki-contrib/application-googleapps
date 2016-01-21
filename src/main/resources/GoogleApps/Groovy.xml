@@ -166,6 +166,7 @@ public init(xwiki, context, doc, services) {
  // adding user profile scopes
  // SCOPES.add(PlusScopes.PLUS_LOGIN);
  SCOPES.add(PlusScopes.USERINFO_EMAIL);
+ SCOPES.add(PlusScopes.USERINFO_PROFILE);
  SCOPES.add(PlusScopes.PLUS_ME);
  SCOPES.addAll(Arrays.asList(DriveScopes.DRIVE));
 
