@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
 
 <xwikidoc>
   <web>GoogleApps</web>
@@ -30,9 +11,9 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1420066800000</creationDate>
-  <date>1420066800000</date>
-  <contentUpdateDate>1420066800000</contentUpdateDate>
+  <creationDate>1451602800000</creationDate>
+  <date>1451602800000</date>
+  <contentUpdateDate>1451602800000</contentUpdateDate>
   <version>1.1</version>
   <title>Google Apps Integration Translations</title>
   <defaultTemplate/>
@@ -83,6 +64,11 @@ GoogleApps.GoogleAppsConfigClass_appname=Application Name
 GoogleApps.GoogleAppsConfigClass_key=Secret Key
 GoogleApps.GoogleAppsConfigClass_domain=Domain Google Apps
 GoogleApps.GoogleAppsConfigClass_active=Activate
+GoogleApps.GoogleAppsConfigClass_useCookies=Enable the use of cookies
+GoogleApps.GoogleAppsConfigClass_skipLoginPage=(Need Cookies enabled) Skip login page 
+GoogleApps.GoogleAppsConfigClass_authWithCookies=(Need Cookies enabled) Allow authentication with cookie - skip google if already logged one time
+GoogleApps.GoogleAppsConfigClass_cookiesTTL=(Need Cookies enabled) Cookies Time To Live in seconds - default : 3 days.
+
 googleapps.edit.editingoogleapps.link=Edit in Google Apps
 googleapps.edit.title=Edit XWiki Attachment in Google Apps
 googleapps.edit.overwritemessage=There is already a file named {0}. You can either overwrite it or create a new one:
@@ -93,6 +79,7 @@ googleapps.edit.newfile.desc=A new Google Apps document has been created. You ca
 googleapps.edit.desc=Once you have edited the document in Google Apps, using the following button you can retrieve the document content and resave it as an XWiki attachement:
 googleapps.edit.retrieve.button=Retrieve Document Content
 googleapps.edit.editingoogle.button=Edit Google Apps Document
+
 googleapps.import.importfromgoogleapps=Import from Google Apps
 googleapps.import.title=Importing a document from Google Apps
 googleapps.import.desc=To import a Google Apps document in the page {0} ({1}) search for the document in the Google Apps repository and click 'Import to XWiki':
@@ -100,9 +87,11 @@ googleapps.import.form.title=Search for Google Documents:
 googleapps.import.form.button=Search
 googleapps.import.importas=Import to XWiki as
 googleapps.import.nextresults.button=Next results
+
 googleapps.retrieve.title=Retrieve document from Google Apps
 googleapps.retrieve.fail=Failed to retrieve document from Google Apps
 googleapps.retrieve.nodocument=No document has been given for retrieval.
+
 googleapps.login.title=Google Apps Login
 googleapps.login.withgoogle=Login with Google
 googleapps.login.withxwiki=Login with XWiki
