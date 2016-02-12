@@ -376,11 +376,11 @@
         <value>clientid</value>
         <value>secret</value>
         <value>scope</value>
-	<value>domain</value>
-	<value>useCookies</value>
-	<value>skipLoginPage</value>
-	<value>authWithCookies</value>
-	<value>cookiesTTL</value>
+        <value>domain</value>
+        <value>useCookies</value>
+        <value>skipLoginPage</value>
+        <value>authWithCookies</value>
+        <value>cookiesTTL</value>
       </propertiesToShow>
     </property>
     <property>
