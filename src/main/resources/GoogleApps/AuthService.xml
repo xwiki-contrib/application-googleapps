@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
 
 <xwikidoc>
   <web>GoogleApps</web>
@@ -64,11 +45,13 @@ public class GoogleAppsAuthenticationImpl extends XWikiAuthServiceImpl {
  private static final Log LOG = LogFactory.getLog(GroovyAuthServiceImpl.class);
 
  public XWikiUser checkAuth(XWikiContext context) throws XWikiException {
-  LOG.info("In groovy page checkAuth" );
+  LOG.info("GoogleApps authentificator - checkAuth" );
   if(isLogoutRequest(context)) {
+    LOG.info("caught a logout request" );
     def cookieTools = context.getWiki().parseGroovyFromPage("xwiki:GoogleApps.CookieAuthenticationPersistenceStoreTools", context)
     cookieTools.initialize(context)
     cookieTools.clear()
+    LOG.info("cleared cookie" );
   }
   return super.checkAuth(context);
  }
@@ -88,6 +71,7 @@ public class GoogleAppsAuthenticationImpl extends XWikiAuthServiceImpl {
  }
 
  public void showLogin(XWikiContext context) throws XWikiException {
+  LOG.info("GoogleApps authentificator - showLogin" );
   def redirected = false;
   try {
    def url = context.getWiki().getURL("GoogleApps.Login", "view", context)
@@ -95,11 +79,15 @@ public class GoogleAppsAuthenticationImpl extends XWikiAuthServiceImpl {
    def configObj = configdoc.getObject("xwiki:GoogleApps.GoogleAppsConfigClass");
    def usecookies = configObj.getStringValue("useCookies");
    def skipLoginPage = configObj.getStringValue("skipLoginPage");
+   LOG.info("get cookie configuration : useCookies = " + usecookies)
+   LOG.info("get cookie configuration : skipLoginPage = " + skipLoginPage)
    if (usecookies == "1" &amp;&amp; skipLoginPage == "1") {
+    LOG.info("skip the login page ")
     def request = context.getRequest();
     def cookieTools = context.getWiki().parseGroovyFromPage("xwiki:GoogleApps.CookieAuthenticationPersistenceStoreTools", context)
     cookieTools.initialize(context)
     def userCookie = cookieTools.retrieve()
+    LOG.info("retrieved user from cookie : " + userCookie)
     if (userCookie) {
       def savedRequestId = request.getParameter(SavedRequestManager.getSavedRequestIdentifier());
       if (StringUtils.isEmpty(savedRequestId)) {
@@ -121,42 +109,51 @@ public class GoogleAppsAuthenticationImpl extends XWikiAuthServiceImpl {
       }
 
       def finalURL = url + "?" + sridParameter + "&amp;xredirect=" + URLEncoder.encode(redirectBack.toString(), "UTF-8");
-      System.out.println("Redirecting to "  + finalURL);
+      LOG.info("Redirecting to "  + finalURL);
       redirected = true;
       context.getResponse().sendRedirect(finalURL);
     }
    }
   } catch (e) {
-      e.printStackTrace();
+      LOG.error("Exception in showLogin : " + e.printStackTrace())
   } finally { 
      if (!redirected)
       super.showLogin(context);
+      LOG.info("GoogleApps authentificator - showLogin end" );
   }
  }
 
  public Principal authenticate(String username, String password, XWikiContext context) throws XWikiException {
-       LOG.info("In groovy page authenticate" );
+       LOG.info("GoogleApps authentificator - authenticate" );
        def session = context.getRequest().getSession();
        def xwikiUser = session.getAttribute("googleappslogin");
+       LOG.info("xwikiUser from session : " + xwikiUser)
        // get configuration for authentification with cookies
        def configdoc = context.getWiki().getDocument("xwiki:GoogleApps.GoogleAppsConfig", context);
        def configObj = configdoc.getObject("xwiki:GoogleApps.GoogleAppsConfigClass");
        def usecookies = configObj.getStringValue("useCookies");
        def authWithCookies = configObj.getStringValue("authWithCookies");
+       def cookieTTL = configObj.getStringValue("cookiesTTL");
+       LOG.info("get cookie configuration : useCookies = " + usecookies)
+       LOG.info("get cookie configuration : authWithCookies = " + authWithCookies)
+       LOG.info("get cookie configuration : cookieTTL = " + cookieTTL)
        // authenticate user from cookie value
        if (xwikiUser == null &amp;&amp; usecookies == "1" &amp;&amp; authWithCookies == "1") {
+         LOG.info("Authenticate with cookie")
          def cookieTools = context.getWiki().parseGroovyFromPage("xwiki:GoogleApps.CookieAuthenticationPersistenceStoreTools", context)
          cookieTools.initialize(context)
          def userCookie = cookieTools.retrieve()
+         LOG.info("retrieved user from cookie : " + userCookie)
          def userFullName = "xwiki:" + userCookie
          def userDoc = context.getWiki().getDocument(userFullName, context);
          xwikiUser = (userCookie == null || userDoc.isNew()) ? null : userFullName ;
-         LOG.info("Authenticate with cookie")
+         LOG.info("xwikiUser from cookie : " + xwikiUser)
        }
        if (xwikiUser!=null) {
           LOG.info("Authenticating user " + xwikiUser);
           return new SimplePrincipal(xwikiUser);
        } else {
+        LOG.info("use default authenticate method for user : " + username)
         return super.authenticate(username, password, context);
        }
  }
