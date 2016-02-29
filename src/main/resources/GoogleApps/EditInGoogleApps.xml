@@ -35,7 +35,7 @@
   <date>1420066800000</date>
   <contentUpdateDate>1420066800000</contentUpdateDate>
   <version>1.1</version>
-  <title>$msg.get("googleapps.edit.title")</title>
+  <title>$services.localization.render("googleapps.edit.title")</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -56,15 +56,15 @@
 Document is in Google Drive. 
 
 (% class="buttonwrapper" %)
-{{html clean=false}}&lt;a href="${gdoc.editLink}" target="_blank"&gt;$msg.get("googleapps.edit.editingoogle.button")&lt;/a&gt;{{/html}}
+{{html clean=false}}&lt;a href="${gdoc.editLink}" target="_blank"&gt;$services.localization.render("googleapps.edit.editingoogle.button")&lt;/a&gt;{{/html}}
 
-$msg.get("googleapps.edit.desc")
+$services.localization.render("googleapps.edit.desc")
 
-(% class="buttonwrapper" %)[[$msg.get("googleapps.edit.retrieve.button")&gt;&gt;RetrieveFromGoogleApps||queryString="page=${escapetool.url($request.page)}&amp;name=${escapetool.url($request.name)}&amp;url=${escapetool.url($gdoc.exportLink)}&amp;id=${gdoc.id}"]]
+(% class="buttonwrapper" %)[[$services.localization.render("googleapps.edit.retrieve.button")&gt;&gt;RetrieveFromGoogleApps||queryString="page=${escapetool.url($request.page)}&amp;name=${escapetool.url($request.name)}&amp;url=${escapetool.url($gdoc.exportLink)}&amp;id=${gdoc.id}"]]
 #else
 This document is not yet uploaded to Google Drive. Please confirm that you would like to upload it to edit it.
 
-(% class="buttonwrapper" %)[[$msg.get("googleapps.edit.confirm")&gt;&gt;||queryString="page=${escapetool.url($request.page)}&amp;name=${escapetool.url($request.name)}&amp;confirm=1"]]
+(% class="buttonwrapper" %)[[$services.localization.render("googleapps.edit.confirm")&gt;&gt;||queryString="page=${escapetool.url($request.page)}&amp;name=${escapetool.url($request.name)}&amp;confirm=1"]]
 #end
 
 {{/velocity}}</content>

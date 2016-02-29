@@ -343,7 +343,7 @@
       <categoryIcon/>
     </property>
     <property>
-      <codeToExecute>$msg.get('googleapps.config.explanation')</codeToExecute>
+      <codeToExecute>$services.localization.render('googleapps.config.explanation')</codeToExecute>
     </property>
     <property>
       <configurationClass>GoogleApps.GoogleAppsConfigClass</configurationClass>
@@ -361,7 +361,7 @@
       <displayInSection>googleapps</displayInSection>
     </property>
     <property>
-      <heading>$msg.get('googleapps.config.heading')</heading>
+      <heading>$services.localization.render('googleapps.config.heading')</heading>
     </property>
     <property>
       <iconAttachment>GoogleAppsSectionIcon.png</iconAttachment>

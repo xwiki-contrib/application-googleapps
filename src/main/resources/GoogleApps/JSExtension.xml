@@ -136,11 +136,11 @@ var listener = function(event) {
         var dlinkurl = dlink[0].href;
         var dlinkpos = dlinkurl.indexOf("?");
         var filename = dlinkurl.substring(dlinkurl.lastIndexOf("/", dlinkpos) + 1, dlinkpos)
-        buttons[i].insert('&lt;a class="editlink" href="$xwiki.getURL("GoogleApps.EditInGoogleApps")?page=' + encodeURIComponent(XWiki.currentSpace) + '.' + encodeURIComponent(XWiki.currentPage) + '&amp;name=' + filename + '" title="$msg.get("googleapps.edit.editingoogleapps.link")"&gt;$msg.get("googleapps.edit.editingoogleapps.link")&lt;/a&gt;')
+        buttons[i].insert('&lt;a class="editlink" href="$xwiki.getURL("GoogleApps.EditInGoogleApps")?page=' + encodeURIComponent(XWiki.currentSpace) + '.' + encodeURIComponent(XWiki.currentPage) + '&amp;name=' + filename + '" title="$services.localization.render("googleapps.edit.editingoogleapps.link")"&gt;$services.localization.render("googleapps.edit.editingoogleapps.link")&lt;/a&gt;')
        }
      }
      var attachaddform = $("AddAttachment");
-     attachaddform.insert('&lt;span class="buttonwrapper" style="float: right; position: relative; top: -25px;"&gt;&lt;a href="$xwiki.getURL("GoogleApps.ImportFromGoogleApps")?page=' + encodeURIComponent(XWiki.currentSpace) + '.' + encodeURIComponent(XWiki.currentPage) + '"&gt;$msg.get("googleapps.import.importfromgoogleapps")&lt;/a&gt;&lt;/span&gt;')
+     attachaddform.insert('&lt;span class="buttonwrapper" style="float: right; position: relative; top: -25px;"&gt;&lt;a href="$xwiki.getURL("GoogleApps.ImportFromGoogleApps")?page=' + encodeURIComponent(XWiki.currentSpace) + '.' + encodeURIComponent(XWiki.currentPage) + '"&gt;$services.localization.render("googleapps.import.importfromgoogleapps")&lt;/a&gt;&lt;/span&gt;')
      document.stopObserving("xwiki:docextra:loaded", listener);
      delete listener;
   }

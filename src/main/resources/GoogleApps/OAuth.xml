@@ -43,7 +43,7 @@
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>true</hidden>
   <content>
-$msg.get("googleapps.login.oauth.message")
+$services.localization.render("googleapps.login.oauth.message")
 
 {{velocity}}
 #set($gagroovy = $xwiki.parseGroovyFromPage("GoogleApps.Groovy"))
@@ -51,12 +51,12 @@ $msg.get("googleapps.login.oauth.message")
 #set($creds = $gagroovy.authorize())
 #if($creds)
 #if($request.state)
-$msg.get("googleapps.login.oauth.success")
+$services.localization.render("googleapps.login.oauth.success")
 #else
-$msg.get("googleapps.login.oauth.successwithredirect")
+$services.localization.render("googleapps.login.oauth.successwithredirect")
 #end
 #else
-$msg.get("googleapps.login.oauth.notauthenticated")
+$services.localization.render("googleapps.login.oauth.notauthenticated")
 #end
 
 {{/velocity}}</content>

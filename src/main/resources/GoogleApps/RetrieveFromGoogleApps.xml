@@ -35,7 +35,7 @@
   <date>1420066800000</date>
   <contentUpdateDate>1420066800000</contentUpdateDate>
   <version>1.1</version>
-  <title> $msg.get("googleapps.retrieve.title")</title>
+  <title> $services.localization.render("googleapps.retrieve.title")</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -48,10 +48,10 @@
 #if($request.url)
  #set($ok = $gagroovy.retrieveFileFromGoogle($request.page, $request.name, $request.id, $request.url))
  #if(!$ok)
-$msg.get("googleapps.retrieve.fail") $request.id
+$services.localization.render("googleapps.retrieve.fail") $request.id
  #end
 #else
-$msg.get("googleapps.retrieve.nodocument") 
+$services.localization.render("googleapps.retrieve.nodocument") 
 #end
 {{/velocity}}</content>
 </xwikidoc>
