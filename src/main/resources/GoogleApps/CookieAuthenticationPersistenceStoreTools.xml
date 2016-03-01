@@ -168,6 +168,7 @@ public class CookieAuthenticationPersistenceStoreTools
 
     public String retrieve()
     {
+        logger.info("retrieve cookie " + cookiePfx + AUTHENTICATION_COOKIE);
         String cookie = getCookieValue(cookiePfx + AUTHENTICATION_COOKIE);
         if (cookie != null) {
             return decryptText(cookie);
@@ -225,6 +226,7 @@ public class CookieAuthenticationPersistenceStoreTools
         if (request != null) {
             Cookie cookie = request.getCookie(cookieName);
             if (cookie != null) {
+                logger.info("cookie : " + cookie)
                 return cookie.getValue();
             }
         }
