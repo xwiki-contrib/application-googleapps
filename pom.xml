@@ -40,34 +40,6 @@
     <xwiki.extension.licensing.excludedDocuments>
       GoogleApps.GoogleAppsConfig
     </xwiki.extension.licensing.excludedDocuments>
-    <!-- <xwiki.extension.licensing.excludedDocuments>
-      GoogleApps.AuthService,
-      GoogleApps.EditInGoogleApps,
-      GoogleApps.GoogleAppsConfigSheet,
-      GoogleApps.ImportFromGoogleApps,
-      GoogleApps.Login,
-      GoogleApps.SynchronizedDocumentClass,
-      GoogleApps.CookieAuthenticationPersistenceStoreTools,
-      GoogleApps.GitHubAppDescriptor,
-      GoogleApps.GoogleAppsConfigTemplate,
-      GoogleApps.Install,
-      GoogleApps.OAuth,
-      GoogleApps.Sync,
-      GoogleApps.WebPreferences,
-      GoogleApps.DriveMacroTest,
-      GoogleApps.GoogleAppsAuthClass,
-      GoogleApps.GoogleAppsConfig,
-      GoogleApps.WebHome,
-      GoogleApps.JSExtension,
-      GoogleApps.RequestMatcherTools,
-      GoogleApps.TestDocumentList,
-      GoogleApps.DriveMacro,
-      GoogleApps.GoogleAppsConfigClass,
-      GoogleApps.Groovy,
-      GoogleApps.LoginExtension,
-      GoogleApps.RetrieveFromGoogleApps,
-      GoogleApps.Translations
-    </xwiki.extension.licensing.excludedDocuments> -->
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Google Apps Integration (Pro)</xwiki.extension.name>
     <!-- Don't run CLIRR here since there's no Java code. -->
