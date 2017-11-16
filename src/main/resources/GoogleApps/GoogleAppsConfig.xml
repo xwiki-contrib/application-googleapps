@@ -343,7 +343,13 @@
       <categoryIcon/>
     </property>
     <property>
-      <codeToExecute>$services.localization.render('googleapps.config.explanation')</codeToExecute>
+      <codeToExecute>#set ($mainReference = $services.model.createDocumentReference('', 'GoogleApps', 'OAuth'))
+#if (!$services.licensing.licensor.hasLicensureForEntity($mainReference))
+  {{error}}$services.localization.render('googleapps.error.noValidLicense'){{/error}}
+  #set ($discard = $app.set('configurationClass', ''))
+#else
+  $services.localization.render('googleapps.config.explanation')
+#end</codeToExecute>
     </property>
     <property>
       <configurationClass>GoogleApps.GoogleAppsConfigClass</configurationClass>

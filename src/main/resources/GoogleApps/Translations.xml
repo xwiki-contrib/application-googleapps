@@ -24,7 +24,7 @@
   <web>GoogleApps</web>
   <name>Translations</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <parent>GoogleApps.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
@@ -40,43 +40,8 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <object>
-    <class>
-      <name>XWiki.TranslationDocumentClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <scope>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>scope</name>
-        <number>1</number>
-        <prettyName>Scope</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </scope>
-    </class>
-    <name>GoogleApps.Translations</name>
-    <number>0</number>
-    <className>XWiki.TranslationDocumentClass</className>
-    <guid>905f8811-0b7b-401a-ae4f-fa8ee05f687e</guid>
-    <property>
-      <scope>GLOBAL</scope>
-    </property>
-  </object>
   <content>admin.googleapps=Google Apps
 googleapps.config.heading=Google Apps Integration Configuration
 googleapps.config.explanation=XWiki can be integrated with Google Apps, which then allows you to edit Office Attachments using the Google Apps editors as well as resave them in the wiki. It also allows to upload a Google Apps file to any Wiki Page. To activate Google Apps you need to [[register for OAuth access on Google.com&gt;&gt;https://accounts.google.com/ManageDomains]] and to insert your domain name and key in the following settings. You will find more information about registration in [[Google's registration documentation&gt;&gt;http://code.google.com/apis/accounts/docs/RegistrationForWebAppsAuto.html]].
@@ -124,5 +89,42 @@ googleapps.login.oauth.successwithredirect=Successfull authentication. You are b
 googleapps.login.oauth.notauthenticated=You will be redirected to Google for Authentication.
 googleapps.login.domainerror1=You are not authorized to login on this XWiki instance.
 googleapps.login.domainerror2=Your current google account is
-googleapps.login.domainerror3=Please disconnect from this account, and try to login again.</content>
+googleapps.login.domainerror3=Please disconnect from this account, and try to login again.
+
+googleapps.error.noValidLicense=There is no valid license for the Google Apps Integration (Pro).</content>
+  <object>
+    <name>GoogleApps.Translations</name>
+    <number>0</number>
+    <className>XWiki.TranslationDocumentClass</className>
+    <guid>905f8811-0b7b-401a-ae4f-fa8ee05f687e</guid>
+    <class>
+      <name>XWiki.TranslationDocumentClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>1</number>
+        <prettyName>Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <scope>GLOBAL</scope>
+    </property>
+  </object>
 </xwikidoc>
