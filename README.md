@@ -1,4 +1,4 @@
-# Google Apps Integration
+# Google Apps Integration (Pro)
 
 * Project Lead: [Alex Cotiugă](https://github.com/acotiuga)
 * [Documentation](https://store.xwiki.com/xwiki/bin/view/Extension/GoogleAppsIntegration)
