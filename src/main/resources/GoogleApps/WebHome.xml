@@ -40,12 +40,14 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{include reference="Licenses.Code.VelocityMacros"/}}
+
+{{velocity}}
 #set ($mainReference = $services.model.createDocumentReference('', 'GoogleApps','OAuth'))
 #if (!$services.licensing.licensor.hasLicensureForEntity($mainReference))
-  {{error}}{{translation key='googleapps.error.noValidLicense' /}}{{/error}}
+  {{error}}#getMissingLicenseMessage('googleapps.extension.name'){{/error}}
 #else
 This is the code for the Google Apps extension, allowing to integrate XWiki with Google's editing application (Google Docs, Spreadsheet, Presentations and Drawing). Thanks to this application it possible to easily import a Google Apps document as an attachment in XWiki (in multiple formats) and also to launch editing of an XWiki attachment in Google Apps. Once your editing session is finished you can reimport it in XWiki.
 

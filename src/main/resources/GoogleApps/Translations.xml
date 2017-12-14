@@ -91,7 +91,7 @@ googleapps.login.domainerror1=You are not authorized to login on this XWiki inst
 googleapps.login.domainerror2=Your current google account is
 googleapps.login.domainerror3=Please disconnect from this account, and try to login again.
 
-googleapps.error.noValidLicense=There is no valid license for the Google Apps Integration (Pro).</content>
+googleapps.extension.name=Google Apps Integration (Pro)</content>
   <object>
     <name>GoogleApps.Translations</name>
     <number>0</number>
