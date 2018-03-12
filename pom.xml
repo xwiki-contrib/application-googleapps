@@ -74,6 +74,10 @@
     	<version>v2-rev174-1.20.0</version>
     </dependency>
   </dependencies>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/xwikisas/application-googleapps/issues</url>
+  </issueManagement>
   <scm>
     <connection>scm:git:git://github.com/xwikisas/application-googleapps.git</connection>
     <developerConnection>scm:git:git@github.com:xwikisas/application-googleapps.git</developerConnection>
