@@ -38,7 +38,8 @@
       GoogleApps.WebHome
     </xwiki.extension.licensing.publicDocuments>
     <xwiki.extension.licensing.excludedDocuments>
-      GoogleApps.GoogleAppsConfig
+      GoogleApps.GoogleAppsConfig,
+      GoogleApps.WebPreferences
     </xwiki.extension.licensing.excludedDocuments>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Google Apps Integration (Pro)</xwiki.extension.name>
