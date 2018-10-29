@@ -44,7 +44,7 @@
   <hidden>true</hidden>
   <content>admin.googleapps=Google Apps
 googleapps.config.heading=Google Apps Integration Configuration
-googleapps.config.explanation=XWiki can be integrated with Google Apps, which then allows you to edit Office Attachments using the Google Apps editors as well as resave them in the wiki. It also allows to upload a Google Apps file to any Wiki Page. To activate Google Apps you need to [[register for OAuth access on Google.com&gt;&gt;https://accounts.google.com/ManageDomains]] and to insert your domain name and key in the following settings. You will find more information about registration in [[Google's registration documentation&gt;&gt;http://code.google.com/apis/accounts/docs/RegistrationForWebAppsAuto.html]].
+googleapps.config.explanation=XWiki can be integrated with Google Apps, which then allows you to edit Office Attachments using the Google Apps editors as well as resave them in the wiki. It also allows to upload a Google Apps file to any Wiki Page. To activate Google Apps you need to [[register for OAuth access on Google.com&gt;&gt;https://accounts.google.com/ManageDomains]] and to insert your domain name and key in the following settings.
 GoogleApps.GoogleAppsConfigClass_appname=Application Name
 GoogleApps.GoogleAppsConfigClass_key=Secret Key
 GoogleApps.GoogleAppsConfigClass_domain=Domain Google Apps
