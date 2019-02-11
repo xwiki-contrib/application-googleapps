@@ -381,7 +381,6 @@
         <value>appname</value>
         <value>clientid</value>
         <value>secret</value>
-        <value>scope</value>
         <value>domain</value>
         <value>useCookies</value>
         <value>skipLoginPage</value>
