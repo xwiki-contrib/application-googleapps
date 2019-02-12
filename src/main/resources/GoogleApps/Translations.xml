@@ -51,8 +51,6 @@ GoogleApps.GoogleAppsConfigClass_clientid=Client ID
 GoogleApps.GoogleAppsConfigClass_clientid.hint=As provided by the Google Console.
 GoogleApps.GoogleAppsConfigClass_secret=Secret Key
 GoogleApps.GoogleAppsConfigClass_secret.hint=As provided by the Google Console
-GoogleApps.GoogleAppsConfigClass_scope=Scopes (remove me)
-GoogleApps.GoogleAppsConfigClass_scope.hint=remove me
 
 GoogleApps.GoogleAppsConfigClass_domain=Domain Google Apps
 GoogleApps.GoogleAppsConfigClass_domain.hint=Restricts the domain of the users allowed to login to the Wiki.
