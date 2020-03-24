@@ -58,8 +58,8 @@ import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.*;
 
 import com.google.api.client.http.ByteArrayContent;
-import com.google.api.services.plus.Plus;
-import com.google.api.services.plus.PlusScopes;
+import com.google.api.services.people.v1.PeopleServiceScopes;
+import com.google.api.services.people.v1.PeopleService;
 
 import org.xwiki.environment.Environment;
 import com.xpn.xwiki.web.Utils;
@@ -174,12 +174,10 @@ public init(xwiki, context, doc, services) {
  this.authWithCookies = getConfig("authWithCookies");
  this.cookiesTTL = getConfig("cookiesTTL");
  
- // adding user profile scopes
- // SCOPES.add(PlusScopes.PLUS_LOGIN);
- SCOPES.add(PlusScopes.USERINFO_EMAIL);
- SCOPES.add(PlusScopes.USERINFO_PROFILE);
- SCOPES.add(PlusScopes.PLUS_ME);
- SCOPES.addAll(Arrays.asList(DriveScopes.DRIVE));
+  // adding user profile scopes
+  SCOPES.add(PeopleServiceScopes.USERINFO_EMAIL);
+  SCOPES.add(PeopleServiceScopes.USERINFO_PROFILE);
+  SCOPES.addAll(Arrays.asList(DriveScopes.DRIVE));
 
  addDebug("APPNAME: ${APPNAME}");
  addDebug("CLIENTID: ${CLIENTID}");
@@ -372,50 +370,41 @@ def getFlow() {
         if (request.state &amp;&amp; request.state!="") {
            def url = storedStates.get(request.state);
            if (url!=null) {
-            addDebug("Redirecting to final destination after authorieation: ${url}")
+            addDebug("Redirecting to final destination after authorization: ${url}")
             response.sendRedirect(url)
            }
         }
         return creds;
  }
 
-  /**
-     * Build and return an authorized Google Plus client service.
-     * @return an authorized Drive client service
-     * @throws IOException
-     */
-  def getPlusService() throws IOException {
-        Credential credential = authorize();
-        return new Plus.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(APPNAME)
-                .build();
-    }
-
   def updateUser() {
     def xwikiUser = null;
     def credential = authorize();
-    def plus = new Plus.Builder(
+    def people = new PeopleService.Builder(
                 HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPNAME)
                 .build();
-    def user = plus.people().get("me").execute()
+    def user = people.people().get("people/me").setPersonFields("names,emailAddresses").execute()
     this.googleUser = user
+
+    def email = user.emailAddresses[0].value;
+    def domain = email.substring(email.indexOf('@') + 1);
+    def givenName = user.names[0].givenName;
+    def familyName = user.names[0].familyName;
+
     if (user==null) {
       return null;
-    } else if (DOMAIN!="" &amp;&amp; (!user.domain || user.domain!=DOMAIN)) {
+    } else if (DOMAIN!="" &amp;&amp; (!domain || domain != DOMAIN)) {
       def userId = context.user + "-" + request.getSession().hashCode();
       storedCredentials.remove(userId);
       addDebug("Removed credentials for userid " + userId)
       return -1;
     } else {
-      def id = user.id
-      def email = "";
+      def id = user.resourceName.substring(user.resourceName.indexOf('/') + 1);
       def db = context.getDatabase()
       try {
         // Force main wiki database to create the user as global
         context.setDatabase("xwiki")
-        email = (user.emails!=null &amp;&amp; user.emails.size()&gt;0) ? user.emails.getAt(0).value : "";
         def wikiUserList = services.query.xwql("from doc.object(GoogleApps.GoogleAppsAuthClass) as auth where auth.id=:id").bindValue("id", id).execute()
         if ((wikiUserList==null) || (wikiUserList.size()==0))
           wikiUserList = services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.email=:email").bindValue("email", email).execute()
@@ -428,7 +417,7 @@ def getFlow() {
           // create user
           def parentref = xwiki.getDocumentAsAuthor("Main.UserDirectory").getDocumentReference()
           def randomPassword = RandomStringUtils.randomAlphanumeric(8)
-          def isCreated = xwiki.getXWiki().createUser(xwikiUser, ["first_name" : user.name.givenName, "last_name" : user.name.familyName, "email" : email,  "password" : randomPassword], parentref, null, null, "edit", context.context) 
+          def isCreated = xwiki.getXWiki().createUser(xwikiUser, ["first_name" : givenName, "last_name" : familyName, "email" : email,  "password" : randomPassword], parentref, null, null, "edit", context.context)
           // Add google apps id to the user
           if (isCreated) {
             xwikiUser = "XWiki." + xwikiUser
@@ -455,12 +444,12 @@ def getFlow() {
                userDoc.set("email", email)
                changed = true;
              }
-             if (userDoc.getValue("first_name") != user.name.givenName) {
-               userDoc.set("first_name", user.name.givenName)
+             if (userDoc.getValue("first_name") != givenName) {
+               userDoc.set("first_name", givenName)
                changed = true;
              }
-             if (userDoc.getValue("last_name") != user.name.familyName) {
-               userDoc.set("last_name", user.name.familyName)
+             if (userDoc.getValue("last_name") != familyName) {
+               userDoc.set("last_name", familyName)
                changed = true;
              }
              if (userDoc.getObject("GoogleApps.GoogleAppsAuthClass")==null) {
