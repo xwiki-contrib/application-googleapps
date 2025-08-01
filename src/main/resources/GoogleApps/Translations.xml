@@ -24,7 +24,7 @@
   <web>GoogleApps</web>
   <name>Translations</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <parent>GoogleApps.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
@@ -40,7 +40,7 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
   <object>
     <class>
